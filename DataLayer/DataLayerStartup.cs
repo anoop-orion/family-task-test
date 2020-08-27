@@ -1,4 +1,5 @@
 ﻿using Core.Abstractions.Repositories;
+using Core.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace DataLayer
         public static void AddDatalayer(this IServiceCollection services)
         {
             services.AddTransient<IMemberRepository, MemberRepository>();
+            services.AddTransient<ITaskRepository, TaskRepository>();
         }
     }
 }

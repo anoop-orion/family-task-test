@@ -3,17 +3,19 @@
 @using FamilyTask.Components
 @using FamilyTask.Shared.Components
 
-@if(isLoaded) {
+@if (isLoaded)
+{
     <div class="page-wrapper row m-0 col-12 p-0">
         <div class="col-4 p-0">
-            <LeftMenu MenuItems="@leftMenuItem" OnAddItem="@onAddItem"/>
+            <LeftMenu MenuItems="@leftMenuItem" OnAddItem="@onAddItem" />
         </div>
         <div class="col-8 p-0">
-            @if (showLister) {
+            @if (showLister)
+            {
                 <div class="col-10 offset-1 pt-5">
                     <div class="row m-0">
                         <Field class="col-9 p-0 custom-input">
-                            <TextEdit Placeholder="Enter New Task"/>
+                            <TextEdit Placeholder="Enter New Task" />
                         </Field>
                         <div class="col-3 p-0 text-right">
                             <Button class="add-btn px-4">Add</Button>
@@ -21,10 +23,11 @@
                     </div>
                 </div>
                 <div class="col-10 offset-1">
-                    <TaskListerComponent Tasks="@tasksToShow"/>
+                    <TaskListerComponent Tasks="@tasksToShow" />
                 </div>
             }
-            @if(showCreator) {
+            @if (showCreator)
+            {
                 <div class="col-10 offset-1 pt-5">
                     <FamilyMemberCreator onAddCallback="@onMemberAdd" />
                 </div>
@@ -41,23 +44,81 @@
     private bool isLoaded;
     private bool showLister;
     private bool showCreator;
-    protected override async Task OnInitializedAsync () {
-        members = await Http.GetFromJsonAsync<FamilyMember[]> ("sample-data/family-members.json");
-        allTasks = await Http.GetFromJsonAsync<TaskModel[]> ("sample-data/tasks.json");
-       
-        leftMenuItem = new MenuItem[members.Length + 1];
-        leftMenuItem[0] = new MenuItem {
-                label = "All Tasks",
-                referenceId = Guid.Empty,
-                isActive = true
+
+    static HttpClient httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:5001/api/") };
+    private TaskDataService taskDataService = new TaskDataService(httpClient);
+    private MemberDataService memberDataService = new MemberDataService(httpClient);
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var AllTask = await taskDataService.GetAllTasks();
+        var AllMembers = await memberDataService.GetAllMembers();
+        //members = await Http.GetFromJsonAsync<FamilyMember[]>("sample-data/family-members.json");
+        //allTasks = await Http.GetFromJsonAsync<TaskModel[]>("sample-data/tasks.json");
+
+        List<TaskModel>  lstTaskModels = new List<TaskModel>();
+
+        allTasks = new TaskModel[AllTask.Payload.Count()];
+        members = new FamilyMember[AllTask.Payload.Count()];
+
+        //Bind All Task
+        if (AllTask != null && AllTask.Payload != null && AllTask.Payload.Any())
+        {
+            int i = 0;
+            foreach (var item in AllTask.Payload)
+            {
+                var member = AllMembers.Payload.Where(x => x.Id == item.AssignedToId).FirstOrDefault();
+
+                if(member!=null)
+                {
+                    members[i] = new FamilyMember
+                    {
+                        id = member.Id,
+                        firstname = member.FirstName,
+                        lastname = member.LastName,
+                        email = member.Email,
+                        avtar = member.Avatar,
+                        role = member.Roles
+                    };
+                }
+
+                allTasks[i] = new TaskModel()
+                {
+                    id = item.Id,
+                    text = item.Subject,
+                    isDone = item.IsComplete,
+                    member = new FamilyMember
+                    {
+                        id = member.Id,
+                        firstname = member.FirstName,
+                        lastname = member.LastName,
+                        email = member.Email,
+                        avtar = member.Avatar,
+                        role = member.Roles
+                    }
+                };
+            }
+        }
+
+
+        leftMenuItem = new MenuItem[members.Length+1];
+
+        leftMenuItem[0] = new MenuItem
+        {
+            label = "All Tasks",
+            referenceId = Guid.Empty,
+            isActive = true
         };
+
         leftMenuItem[0].ClickCallback += showAllTasks;
         for (int i = 1; i < members.Length + 1; i++)
         {
-            leftMenuItem[i] = new MenuItem {
-                iconColor = members[i-1].avtar,
-                label = members[i-1].firstname,
-                referenceId = members[i-1].id,
+            leftMenuItem[i] = new MenuItem
+            {
+                iconColor = members[i - 1].avtar,
+                label = members[i - 1].firstname,
+                referenceId = members[i - 1].id,
                 isActive = false
             };
             leftMenuItem[i].ClickCallback += onItemClick;
@@ -66,21 +127,28 @@
         isLoaded = true;
     }
 
-    private void onAddItem() {
+    private void onAddItem()
+    {
         showLister = false;
         showCreator = true;
         makeMenuItemActive(null);
         StateHasChanged();
     }
 
-    private void onItemClick(object sender, object e) {
+    private void onItemClick(object sender, object e)
+    {
         Guid val = (Guid)e.GetType().GetProperty("referenceId").GetValue(e);
         makeMenuItemActive(e);
-        if(allTasks != null && allTasks.Length > 0) {
-            tasksToShow = allTasks.Where(item => {
-                if (item.member != null) {
+        if (allTasks != null && allTasks.Length > 0)
+        {
+            tasksToShow = allTasks.Where(item =>
+            {
+                if (item.member != null)
+                {
                     return item.member.id == val;
-                } else {
+                }
+                else
+                {
                     return false;
                 }
             }).ToArray();
@@ -89,7 +157,8 @@
         showCreator = false;
         StateHasChanged();
     }
-    private void showAllTasks(object sender, object e) {
+    private void showAllTasks(object sender, object e)
+    {
         tasksToShow = allTasks;
         showLister = true;
         showCreator = false;
@@ -97,17 +166,22 @@
         StateHasChanged();
     }
 
-    private void makeMenuItemActive(object e) {
+    private void makeMenuItemActive(object e)
+    {
         foreach (var item in leftMenuItem)
         {
             item.isActive = false;
         }
-        if(e != null) {
+        if (e != null)
+        {
             e.GetType().GetProperty("isActive").SetValue(e, true);
         }
     }
 
-    private void onMemberAdd() {
+    private void onMemberAdd()
+    {
+
         Console.WriteLine("on member add");
     }
+
 }

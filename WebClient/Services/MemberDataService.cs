@@ -13,7 +13,7 @@ namespace WebClient.Services
 {
     public class MemberDataService : IMemberDataService
     {
-        private HttpClient _httpClient;
+        private HttpClient _httpClient;    
         public MemberDataService(HttpClient httpClient)
         {
             _httpClient = httpClient;
@@ -21,7 +21,7 @@ namespace WebClient.Services
 
         public async Task<CreateMemberCommandResult> Create(CreateMemberCommand command)
         {            
-            return await _httpClient.PostJsonAsync<CreateMemberCommandResult>("members", command);
+            return await _httpClient.PostJsonAsync<CreateMemberCommandResult>("Members", command);
         }
 
         public async Task<GetAllMembersQueryResult> GetAllMembers()
