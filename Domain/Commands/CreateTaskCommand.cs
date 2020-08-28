@@ -8,6 +8,6 @@ namespace Domain.Commands
     {
         public string Subject { get; set; }
         public bool IsComplete { get; set; }
-        public int AssignedToId { get; set; }
+        public Guid AssignedToId { get; set; }
     }
 }

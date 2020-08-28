@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Services;
-
+using Microsoft.Extensions.Options;
 namespace WebApi
 {
     public class Startup
@@ -23,10 +23,20 @@ namespace WebApi
         }
 
         public IConfiguration Configuration { get; }
-
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  builder =>
+                                  {
+                                      builder.WithOrigins("*")
+                                      .AllowAnyMethod()
+                                      .AllowAnyHeader();                                      
+                                  });
+            });
             services.AddControllers();
 
             services.AddSupportingServices(Configuration);
@@ -49,7 +59,7 @@ namespace WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Family Task API");
             });
 
-            app.UseCors("Open");
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseHttpsRedirection();
 

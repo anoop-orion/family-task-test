@@ -22,18 +22,22 @@
 
     <ItemGroup>
       <Compile Remove="Domain\**" />
+      <Compile Remove="Helper\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="Domain\**" />
+      <EmbeddedResource Remove="Helper\**" />
     </ItemGroup>
 
     <ItemGroup>
       <None Remove="Domain\**" />
+      <None Remove="Helper\**" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Remove="Domain\**" />
+      <Content Remove="Helper\**" />
     </ItemGroup>
 
 </Project>

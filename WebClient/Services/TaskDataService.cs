@@ -1,13 +1,10 @@
 ﻿using Domain.Commands;
 using Domain.Queries;
+using Microsoft.AspNetCore.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebClient.Abstractions;
-using Microsoft.AspNetCore.Components;
-using System.Runtime.CompilerServices;
 
 namespace WebClient.Services
 {
@@ -20,7 +17,7 @@ namespace WebClient.Services
         }
 
         public async Task<CreateTaskCommandResult> Create(CreateTaskCommand command)
-        {            
+        {
             return await _httpClient.PostJsonAsync<CreateTaskCommandResult>("task", command);
         }
 
@@ -32,6 +29,12 @@ namespace WebClient.Services
         public async Task<UpdateTaskCommandResult> Update(UpdateTaskCommand command)
         {
             return await _httpClient.PutJsonAsync<UpdateTaskCommandResult>($"task/{command.Id}", command);
+        }
+
+        public async Task<bool> DeleteTasks(Guid Id)
+        {
+            await _httpClient.DeleteAsync($"task/{Id}");
+            return true;
         }
     }
 }

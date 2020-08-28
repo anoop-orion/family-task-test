@@ -12,5 +12,6 @@ namespace WebClient.Abstractions
         public Task<CreateTaskCommandResult> Create(CreateTaskCommand command);
         public Task<UpdateTaskCommandResult> Update(UpdateTaskCommand command);
         public Task<GetAllTasksQueryResult> GetAllTasks();
+        public Task<bool> DeleteTasks(Guid Id);
     }
 }

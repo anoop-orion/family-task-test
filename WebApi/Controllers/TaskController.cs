@@ -29,9 +29,7 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var result = await _taskService.CreateTaskCommandHandler(command);
-
             return Created($"/api/task/{result.Payload.Id}", result);
         }
 
@@ -61,7 +59,14 @@ namespace WebApi.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _taskService.GetAllTasksQueryHandler();
+            return Ok(result);
+        }
 
+        [HttpDelete("{Id}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteTask(Guid Id)
+        {
+            var result = await _taskService.DeleteTaskQueryHandler(Id);
             return Ok(result);
         }
     }

@@ -8,6 +8,7 @@ using Domain.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +29,7 @@ namespace Services
         {
             var task = _mapper.Map<Domain.DataModels.Task>(command);
             var persistedTask = await _taskRepository.CreateRecordAsync(task);
-
             var vm = _mapper.Map<TaskVm>(persistedTask);
-
             return new CreateTaskCommandResult()
             {
                 Payload = vm
@@ -54,6 +53,7 @@ namespace Services
 
         public async Task<GetAllTasksQueryResult> GetAllTasksQueryHandler()
         {
+
             IEnumerable<TaskVm> vm = new List<TaskVm>();
             var tasks = await _taskRepository.Reset().ToListAsync();
             if (tasks != null && tasks.Any())
@@ -63,6 +63,12 @@ namespace Services
             {
                 Payload = vm
             };
+        }
+
+        public async Task<bool> DeleteTaskQueryHandler(Guid Id)
+        {
+            await _taskRepository.DeleteRecordAsync(Id);
+            return true;
         }
     }
 }

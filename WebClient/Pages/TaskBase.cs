@@ -60,49 +60,7 @@ namespace WebClient.Pages
             }
             showCreator = true;
             isLoaded = true;
-        }
-       
-        //protected void onAddItem()
-        //{
-        //    showCreator = true;
-        //    StateHasChanged();
-        //}
-
-        //protected async Task onMemberAdd(FamilyMember familyMember)
-        //{
-        //   var result = await  MemberDataService.Create(new Domain.Commands.CreateMemberCommand()
-        //    {
-        //        Avatar = familyMember.avtar,
-        //        FirstName = familyMember.firstname,
-        //        LastName = familyMember.lastname,
-        //        Email = familyMember.email,
-        //        Roles = familyMember.role
-        //    });
-
-        //    if (result != null && result.Payload != null && result.Payload.Id != Guid.Empty)
-        //    {
-        //        members.Add(new FamilyMember()
-        //        {
-        //            avtar = result.Payload.Avatar,
-        //            email = result.Payload.Email,
-        //            firstname = result.Payload.FirstName,
-        //            lastname = result.Payload.LastName,
-        //            role = result.Payload.Roles,
-        //            id = result.Payload.Id
-        //        });
-
-        //        leftMenuItem.Add(new MenuItem
-        //        {
-        //            iconColor = result.Payload.Avatar,
-        //            label = result.Payload.FirstName,
-        //            referenceId = result.Payload.Id
-        //        });
-
-
-        //        showCreator = false;
-        //        StateHasChanged();
-        //    }
-        //}
+        }          
 
     }
 }
